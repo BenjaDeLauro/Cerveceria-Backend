@@ -218,3 +218,13 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Archivos multimedia de Django
+media/
+productos/
+
+# Variables de entorno
+.env.*
+
+# Configuracion local de VS Code
+.vscode/
