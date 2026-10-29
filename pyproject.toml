@@ -1,0 +1,9 @@
+[project]
+name = "cerveceria-backend"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=6.1.2",
+    "djangorestframework>=3.18.3",
+    "pillow>=13.0.0",
+]
