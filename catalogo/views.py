@@ -1,7 +1,8 @@
 from django.db.models.deletion import ProtectedError
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.permissions import IsAdminUser
 from rest_framework.exceptions import ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import Categoria, Marca, Producto, Presentacion, Proveedor
 from .permissions import IsStaffOrReadOnly
@@ -22,6 +23,14 @@ class ProductoViewSet(viewsets.ModelViewSet):
     ).order_by("id")
     serializer_class = ProductoSerializer
     permission_classes = [IsStaffOrReadOnly]
+
+    filter_backends = [
+        DjangoFilterBackend,
+        filters.SearchFilter,
+    ]
+    filterset_fields = ["categoria", "marca", "presentacion"]
+    search_fields = ["nombre", "descripcion"]
+
 
     def get_serializer_class(self):
         if self.action == "list":

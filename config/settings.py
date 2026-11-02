@@ -40,6 +40,9 @@ INSTALLED_APPS = [
 
     # Aplicaciones externas
     'rest_framework',
+    'django_filters',
+    'rest_framework.authtoken',
+    'drf_spectacular',
 
     # Aplicaciones del proyecto
     'usuarios',
@@ -138,3 +141,21 @@ MAILERS = {
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "API de Cervecería",
+    "DESCRIPTION": "API de catálogo, direcciones y pedidos.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+}
