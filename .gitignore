@@ -225,6 +225,10 @@ productos/
 
 # Variables de entorno
 .env.*
+!.env.example
+
+# Datos persistentes locales opcionales
+data/
 
 # Configuracion local de VS Code
 .vscode/
