@@ -71,9 +71,9 @@ class AutenticacionWebTests(TestCase):
 
     def test_login_valido_respeta_destino_interno(self):
         respuesta = self.client.post(reverse('usuarios:login'), {
-            'username': 'cliente', 'password': CLAVE, 'next': reverse('catalogo_web:productos'),
+            'username': 'cliente', 'password': CLAVE, 'next': reverse('swagger-ui'),
         })
-        self.assertRedirects(respuesta, reverse('catalogo_web:productos'))
+        self.assertRedirects(respuesta, reverse('swagger-ui'))
         self.assertEqual(int(self.client.session['_auth_user_id']), self.usuario.pk)
 
     def test_login_no_redirige_a_dominio_externo(self):

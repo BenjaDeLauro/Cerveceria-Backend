@@ -72,23 +72,16 @@ construye y prueba el contenedor en GitHub Actions.
 
 - Registro: `/usuarios/registro/`. Crea una cuenta del grupo **Clientes** y abre su sesión.
 - Login: `/usuarios/login/`. Logout mediante POST: `/usuarios/logout/`.
-- Catálogo público con búsqueda y paginación: `/catalogo/productos/`.
-- Altas, edición y eliminación de productos y categorías mediante templates, protegidas con los permisos de Django.
+- Gestión de productos y categorías desde Django Admin.
 - Grupo **Gestores de catálogo** configurado mediante `configurar_grupos`. Un administrador puede asignarlo desde Usuarios. El comando se puede repetir y no convierte a sus miembros en personal ni superusuarios.
 - Context processor propio, mensajes de confirmación, CSRF y pantallas adaptables a dispositivos móviles.
 - API de autenticación por token: `/api/auth/login/`, `/api/auth/me/` y `/api/auth/logout/`. También se habilitan las sesiones y el acceso navegable en `/api-auth/login/`.
 
 Los pasos de prueba, la matriz de permisos y el contrato para integrar la API se detallan en [docs/autenticacion.md](docs/autenticacion.md).
 
-### Capturas de funcionamiento
+## Captura de funcionamiento
 
-Bienvenida del backend:
-
-![Bienvenida de la cervecería](docs/capturas/bienvenida.jpg)
-
-Inicio de sesión:
-
-![Formulario de inicio de sesión](docs/capturas/login.jpg)
+![Documentación Swagger de la API](docs/capturas/swagger.jpg)
 
 ## Verificación
 

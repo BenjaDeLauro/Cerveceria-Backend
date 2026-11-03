@@ -24,19 +24,8 @@ Al iniciar el servidor se aplican las migraciones y se configura el comando
 idempotente de grupos. No se crean administradores ni contraseñas automáticamente.
 
 - Bienvenida: <http://127.0.0.1:8000/>.
-- Catálogo: <http://127.0.0.1:8000/catalogo/productos/>.
 - Administración: <http://127.0.0.1:8000/admin/>.
 - API de productos: <http://127.0.0.1:8000/api/productos/>.
-
-Para agregar los tres productos de demostración, sin sobrescribir los existentes:
-
-```shell
-docker compose exec web python manage.py cargar_catalogo_demo
-```
-
-Dentro de esta imagen no se incluye el repositorio del frontend. El comando demo
-crea los productos con precio/stock de prueba y las tarjetas muestran la imagen
-por defecto hasta que un administrador cargue las fotografías.
 
 ## Configuración
 
@@ -88,7 +77,7 @@ Si cambia código, dependencias o configuración, ejecutar nuevamente
 encima de la imagen, para que se pruebe lo que realmente se construyó.
 
 El workflow **Verificar Docker** construye la imagen en Linux, ejecuta las pruebas
-de Django, consulta bienvenida/catálogo/API/admin/CSS y comprueba que la base y un
+de Django, consulta bienvenida/Swagger/API/admin/CSS y comprueba que la base y un
 archivo multimedia sobrevivan a la recreación del contenedor. El resultado de esa
 ejecución en Actions es la evidencia de validación del contenedor.
 

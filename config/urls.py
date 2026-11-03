@@ -7,13 +7,12 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 from usuarios.views import TokenView
-from catalogo.vistas_web import BienvenidaView
+from django.views.generic import TemplateView
 
 
 urlpatterns = [
-    path('', BienvenidaView.as_view(), name='inicio'),
+    path('', TemplateView.as_view(template_name='inicio.html'), name='inicio'),
     path('usuarios/', include('usuarios.urls')),
-    path('catalogo/', include('catalogo.urls_web')),
     path('api/auth/', include('usuarios.urls_api')),
     path('api-auth/', include('rest_framework.urls')),
     path('admin/', admin.site.urls),

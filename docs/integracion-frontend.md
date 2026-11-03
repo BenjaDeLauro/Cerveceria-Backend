@@ -35,14 +35,12 @@ npm run dev
 
 Abrir http://127.0.0.1:3000/cervezas. En el frontend, `NEXT_PUBLIC_API_URL` debe apuntar a `http://127.0.0.1:8000/api/`.
 
-## Datos de demostración
+## Verificación manual
 
-`uv run python manage.py cargar_catalogo_demo` agrega tres productos ImperioSur con precio y stock de prueba. Es idempotente y no sobrescribe registros existentes. Copia las imágenes si existe la carpeta vecina del frontend. No crea ni modifica usuarios. La base y los archivos de media permanecen excluidos de Git.
-
-Para comprobar el circuito, editar un producto desde `/admin/catalogo/producto/` y volver a cargar su ficha en el frontend.
+Cargar un producto desde Django Admin y abrir su ficha en el frontend.
 
 ## Validación y tareas
 
-63 pruebas del backend pasan: modelo/admin, autenticación, vistas HTML y API, más integración de búsqueda con categoría, paginación, CORS, token revocado y carga demo sin sobrescritura. `check` y migraciones pendientes sin errores. El frontend tiene nueve pruebas correctas y compilación de producción verificada.
+Ejecutar las pruebas de Django para comprobar modelos, administración, autenticación y API. La integración cubre búsqueda, filtro por categoría, paginación, CORS y revocación de tokens.
 
 Se respetan las responsabilidades acordadas: Benjamín, estructura e integración general; Esteban, autenticación/templates/modelos; Ignacio, API REST. Esta rama adapta el contrato para la conexión del frontend, sin completar por anticipado los demás ViewSets asignados a API. Aún faltan requisitos generales de la consigna (ocho ViewSets, segundo anidado, actions, documentación OpenAPI y Docker) y flujos del frontend; la conexión de lectura no implica que la EFI esté completa.

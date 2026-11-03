@@ -29,16 +29,16 @@ jobs:
         run: |
           docker compose up -d --wait --wait-timeout 90
           curl --fail http://127.0.0.1:8000/
-          curl --fail http://127.0.0.1:8000/catalogo/productos/
+          curl --fail http://127.0.0.1:8000/api/docs/
           curl --fail http://127.0.0.1:8000/api/productos/
           curl --fail http://127.0.0.1:8000/static/css/tienda.css
           curl --fail http://127.0.0.1:8000/admin/login/
       - name: Comprobar persistencia al recrear el contenedor
         run: |
-          docker compose exec -T web python manage.py cargar_catalogo_demo
+          docker compose exec -T web python manage.py shell -c "from catalogo.models import Categoria; Categoria.objects.create(nombre='Persistencia CI')"
           docker compose exec -T web python manage.py shell -c "from pathlib import Path; from django.conf import settings; (Path(settings.MEDIA_ROOT) / 'persistencia.txt').write_text('efi')"
           docker compose up -d --force-recreate --wait --wait-timeout 90
-          docker compose exec -T web python manage.py shell -c "from pathlib import Path; from django.conf import settings; from catalogo.models import Producto; assert Producto.objects.filter(nombre__startswith='ImperioSur ').count() == 3; assert (Path(settings.MEDIA_ROOT) / 'persistencia.txt').read_text() == 'efi'"
+          docker compose exec -T web python manage.py shell -c "from pathlib import Path; from django.conf import settings; from catalogo.models import Categoria; assert Categoria.objects.filter(nombre='Persistencia CI').exists(); assert (Path(settings.MEDIA_ROOT) / 'persistencia.txt').read_text() == 'efi'"
       - name: Mostrar logs y detener los contenedores de prueba
         if: always()
         run: |
