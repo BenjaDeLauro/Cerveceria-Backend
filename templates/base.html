@@ -1,0 +1,34 @@
+{% load static %}
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}{{ nombre_tienda }}{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/tienda.css' %}">
+</head>
+<body>
+  <a class="saltar" href="#contenido">Ir al contenido</a>
+  <header class="cabecera">
+    <a class="marca" href="{% url 'inicio' %}"><span class="simbolo" aria-hidden="true">C<span>·</span></span><span>Cervecería<small>Y BEBIDAS ARTESANALES</small></span></a>
+    <nav aria-label="Navegación principal">
+      <a href="{% url 'catalogo_web:productos' %}">Catálogo</a>
+      {% if perms.catalogo.view_categoria %}<a href="{% url 'catalogo_web:categorias' %}">Categorías</a>{% endif %}
+      {% if user.is_staff %}<a href="{% url 'admin:index' %}">Administración</a>{% endif %}
+    </nav>
+    <div class="cuenta">
+      {% if user.is_authenticated %}
+        <span class="nombre-usuario">Hola, {{ user.first_name|default:user.username }}</span>
+        <form action="{% url 'usuarios:logout' %}" method="post">{% csrf_token %}<button class="boton secundario pequeno" type="submit">Cerrar sesión</button></form>
+      {% else %}
+        <a href="{% url 'usuarios:login' %}">Ingresar</a><a class="boton pequeno" href="{% url 'usuarios:registro' %}">Crear cuenta</a>
+      {% endif %}
+    </div>
+  </header>
+  <main id="contenido" class="contenedor">
+    {% if messages %}<div class="mensajes" role="status">{% for message in messages %}<p class="mensaje {{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
+    {% block contenido %}{% endblock %}
+  </main>
+  <footer class="pie"><span>{{ nombre_tienda }}</span><span>Hecho para compartir. Elegí tu próxima favorita.</span></footer>
+</body>
+</html>

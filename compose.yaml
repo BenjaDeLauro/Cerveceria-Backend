@@ -1,0 +1,28 @@
+services:
+  web:
+    build: .
+    env_file:
+      - .env
+    environment:
+      DJANGO_DATA_DIR: /app/data
+      DJANGO_MEDIA_ROOT: /app/media
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    volumes:
+      - database:/app/data
+      - media:/app/media
+    init: true
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/', timeout=4).read()"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+volumes:
+  database:
+  media:

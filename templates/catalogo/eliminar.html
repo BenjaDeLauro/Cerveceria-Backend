@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ titulo }} · {{ nombre_tienda }}{% endblock %}
+{% block contenido %}<section class="formulario-gestion"><div class="panel"><p class="etiqueta">CONFIRMAR ACCIÓN</p><h1 class="titulo-pagina">{{ titulo }}</h1><p>¿Querés eliminar <strong>{{ object }}</strong>? Esta acción es definitiva.</p><form method="post">{% csrf_token %}{{ form.non_field_errors }}<div class="acciones"><button class="boton boton-peligro" type="submit">Sí, eliminar</button><a class="boton secundario" href="{% url volver %}">Cancelar</a></div></form></div></section>{% endblock %}

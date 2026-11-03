@@ -24,9 +24,9 @@ class CatalogoAPITests(APITestCase):
             with self.subTest(recurso=recurso):
                 respuesta = self.client.get(reverse(f'catalogo_api:{recurso}-list'))
                 self.assertEqual(respuesta.status_code, 200)
-                self.assertEqual(len(respuesta.data), 1)
-                self.assertEqual(respuesta.data[0]['id'], objeto.pk)
-                self.assertEqual(respuesta.data[0]['nombre'], objeto.nombre)
+                self.assertEqual(respuesta.data['count'], 1)
+                self.assertEqual(respuesta.data['results'][0]['id'], objeto.pk)
+                self.assertEqual(respuesta.data['results'][0]['nombre'], objeto.nombre)
 
     def test_detalle_producto(self):
         url = reverse('catalogo_api:producto-detail', args=[self.producto.pk])
@@ -96,7 +96,7 @@ class CatalogoAPITests(APITestCase):
 
         self.assertEqual(respuesta.status_code, 200)
 
-        producto = respuesta.data[0]
+        producto = respuesta.data['results'][0]
 
         self.assertEqual(producto['categoria'], {
             'id': self.categoria.pk,

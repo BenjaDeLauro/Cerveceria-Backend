@@ -1,6 +1,10 @@
-# Cervecería y Bebidas Artesanales — Backend
+# ImperioSur — Backend de Ingeniería de Software
 
-Sistema de gestión de catálogo, clientes y pedidos de una cervecería y tienda de bebidas artesanales. Backend de la EFI 2026 de Ingeniería de Software, conectado al futuro frontend de Programación III.
+Sistema de gestión de catálogo, clientes y pedidos de una cervecería y tienda de bebidas artesanales. Backend de la EFI 2026 de Ingeniería de Software, conectado al frontend ImperioSur de Programación III mediante la API de catálogo.
+
+## Integración con el frontend
+
+El frontend de Programación III consume la API de este backend. El contrato y los datos de prueba se detallan en [docs/integracion-frontend.md](docs/integracion-frontend.md).
 
 ## Integrantes
 
@@ -38,11 +42,53 @@ Se necesita Python 3.12 o superior y [uv](https://docs.astral.sh/uv/).
 ```shell
 uv sync --locked
 uv run python manage.py migrate
+uv run python manage.py configurar_grupos
 uv run python manage.py createsuperuser
 uv run python manage.py runserver
 ```
 
-El administrador está disponible en `http://127.0.0.1:8000/admin/`. La base SQLite, los usuarios locales, las imágenes y `.venv` no se suben a Git.
+La bienvenida está disponible en `http://127.0.0.1:8000/` y el administrador en `http://127.0.0.1:8000/admin/`. La base SQLite, los usuarios locales, las imágenes y `.venv` no se suben a Git.
+
+## Ejecución con Docker
+
+Con Docker iniciado y Compose v2, desde la raíz del repositorio:
+
+```powershell
+Copy-Item .env.example .env
+docker compose up --build -d --wait
+docker compose exec web python manage.py createsuperuser
+```
+
+En Linux/macOS usar `cp .env.example .env` en el primer paso. El ejemplo se copia
+solo la primera vez. Las migraciones y los grupos se preparan al iniciar el
+servidor. SQLite y las imágenes se conservan en volúmenes separados. La aplicación
+queda disponible en `http://127.0.0.1:8000/`.
+
+Los comandos de pruebas, variables, persistencia y conexión con el frontend se
+explican en [docs/docker.md](docs/docker.md). El workflow **Verificar Docker**
+construye y prueba el contenedor en GitHub Actions.
+
+## Usuarios, pantallas y permisos
+
+- Registro: `/usuarios/registro/`. Crea una cuenta del grupo **Clientes** y abre su sesión.
+- Login: `/usuarios/login/`. Logout mediante POST: `/usuarios/logout/`.
+- Catálogo público con búsqueda y paginación: `/catalogo/productos/`.
+- Altas, edición y eliminación de productos y categorías mediante templates, protegidas con los permisos de Django.
+- Grupo **Gestores de catálogo** configurado mediante `configurar_grupos`. Un administrador puede asignarlo desde Usuarios. El comando se puede repetir y no convierte a sus miembros en personal ni superusuarios.
+- Context processor propio, mensajes de confirmación, CSRF y pantallas adaptables a dispositivos móviles.
+- API de autenticación por token: `/api/auth/login/`, `/api/auth/me/` y `/api/auth/logout/`. También se habilitan las sesiones y el acceso navegable en `/api-auth/login/`.
+
+Los pasos de prueba, la matriz de permisos y el contrato para integrar la API se detallan en [docs/autenticacion.md](docs/autenticacion.md).
+
+### Capturas de funcionamiento
+
+Bienvenida del backend:
+
+![Bienvenida de la cervecería](docs/capturas/bienvenida.jpg)
+
+Inicio de sesión:
+
+![Formulario de inicio de sesión](docs/capturas/login.jpg)
 
 ## Verificación
 
@@ -52,8 +98,10 @@ uv run python manage.py makemigrations --check --dry-run
 uv run python manage.py test
 ```
 
-## Organización y alcance
+## Entrega y trabajo en curso
 
-Cada aporte se desarrolla en una rama `feature/*` y se propone mediante un Pull Request hacia `develop`. La versión final deberá integrarse a `main`.
+Esta versión reúne los aportes de modelos, administración, autenticación, API REST y Docker. La API navegable está disponible en `/api/productos/`, Swagger en `/api/docs/` y el esquema OpenAPI en `/api/schema/`.
 
-Este aporte se concentra en completar los modelos, sus migraciones, pruebas y administración. Los requisitos restantes de API mediante ViewSets, autenticación, bienvenida, CORS, documentación de API, Docker y frontend se completarán en sus respectivas tareas. El nombre comercial definitivo y las capturas de funcionamiento también quedan pendientes para la entrega.
+La API registra ocho ViewSets: productos, categorías, marcas, presentaciones, proveedores, direcciones, pedidos y detalles de pedido. Los listados de productos y pedidos incluyen relaciones anidadas. Las acciones de pedidos permiten consultar el total y cancelar un pedido pendiente.
+
+Seguimos trabajando en los detalles de la consigna y en la verificación con el frontend. Los cambios posteriores se preparan en ramas de trabajo y se revisan antes de integrarlos a `main`.

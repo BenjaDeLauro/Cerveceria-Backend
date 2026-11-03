@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block titulo %}Crear cuenta · {{ nombre_tienda }}{% endblock %}
+{% block contenido %}
+<section class="acceso">
+  <div class="acceso-intro"><p class="etiqueta">BIENVENIDO A LA COMUNIDAD</p><h1>Un buen<br>momento<br><em>empieza acá.</em></h1><p>Creá tu cuenta para acompañarnos en este recorrido de sabores artesanales.</p><a class="enlace" href="{% url 'catalogo_web:productos' %}">También podés explorar el catálogo →</a></div>
+  <div class="panel"><p class="etiqueta">SUMATE</p><h2>Crear cuenta</h2><form method="post">{% csrf_token %}{% include 'componentes/campos.html' %}<button class="boton completo" type="submit">Registrarme →</button></form><p class="al-pie">¿Ya tenés cuenta? <a href="{% url 'usuarios:login' %}">Ingresá</a></p></div>
+</section>
+{% endblock %}

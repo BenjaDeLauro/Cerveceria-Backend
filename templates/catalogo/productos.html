@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block titulo %}Catálogo · {{ nombre_tienda }}{% endblock %}
+{% block contenido %}
+<section class="seccion"><div class="titulo-seccion"><div><p class="etiqueta">DESCUBRÍ NUEVOS SABORES</p><h1 class="titulo-pagina">Nuestro catálogo</h1></div>{% if perms.catalogo.add_producto %}<a class="boton" href="{% url 'catalogo_web:producto_crear' %}">+ Agregar producto</a>{% endif %}</div>
+<form class="busqueda" method="get"><label class="sr-only" for="buscar">Buscar productos</label><input id="buscar" type="search" name="q" value="{{ request.GET.q }}" placeholder="Buscá tu próxima favorita…"><button class="boton" type="submit">Buscar</button>{% if request.GET.q %}<a href="{% url 'catalogo_web:productos' %}">Limpiar</a>{% endif %}</form>
+<div class="grilla-productos">{% for producto in productos %}{% include 'catalogo/tarjeta_producto.html' %}{% empty %}<div class="vacio ancho"><h2>{% if request.GET.q %}No encontramos resultados.{% else %}Todavía no hay productos.{% endif %}</h2><p>{% if request.GET.q %}Probá con otro nombre o palabra.{% else %}Volvé pronto para descubrir el catálogo.{% endif %}</p></div>{% endfor %}</div>
+{% include 'componentes/paginacion.html' %}</section>
+{% endblock %}

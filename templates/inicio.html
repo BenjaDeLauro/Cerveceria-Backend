@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block contenido %}
+<section class="hero">
+  <div class="hero-texto">
+    <p class="etiqueta">SABORES CON HISTORIA</p>
+    <h1>Lo artesanal<br>se disfruta<br><em>de otra manera.</em></h1>
+    <p class="bajada">Un lugar para descubrir cervezas y bebidas artesanales. Explorá estilos, conocé las marcas y encontrá tu próxima favorita.</p>
+    <div class="acciones"><a class="boton" href="{% url 'catalogo_web:productos' %}">Explorar el catálogo <span aria-hidden="true">↗</span></a>{% if not user.is_authenticated %}<a class="enlace" href="{% url 'usuarios:registro' %}">Sumate a la comunidad</a>{% endif %}</div>
+    <div class="datos"><div><strong>{{ total_productos }}</strong><span>productos para descubrir</span></div><div><strong>{{ total_categorias }}</strong><span>categorías del catálogo</span></div></div>
+  </div>
+  <div class="hero-arte" aria-hidden="true"><div class="sello">EL SABOR<br>DE LO AUTÉNTICO</div><div class="botella botella-uno"><div class="cuello"></div><div class="etiqueta-botella"><span>SELECCIÓN</span><strong>IPA</strong><span>ARTESANAL</span><div class="lineas"></div></div></div><div class="botella botella-dos"><div class="cuello"></div><div class="etiqueta-botella"><span>SELECCIÓN</span><strong>PORTER</strong><span>ARTESANAL</span><div class="lineas"></div></div></div><div class="nota-arte">BUENA COMPAÑÍA.<br>MEJORES MOMENTOS.</div></div>
+</section>
+<section class="seccion">
+  <div class="titulo-seccion"><div><p class="etiqueta">NUESTRO CATÁLOGO</p><h2>Para empezar a descubrir</h2></div><a class="enlace" href="{% url 'catalogo_web:productos' %}">Ver todos los productos →</a></div>
+  <div class="grilla-productos">{% for producto in productos_recientes %}{% include 'catalogo/tarjeta_producto.html' %}{% empty %}<div class="vacio ancho"><h3>El catálogo está por empezar.</h3><p>Pronto vas a encontrar acá nuestras bebidas artesanales.</p>{% if puede_gestionar_catalogo %}<a class="boton secundario" href="{% url 'catalogo_web:producto_crear' %}">Cargar el primer producto</a>{% endif %}</div>{% endfor %}</div>
+</section>
+{% endblock %}

@@ -1,0 +1,5 @@
+<article class="producto">
+  <div class="imagen-producto">{% if producto.imagen %}<img src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}" loading="lazy">{% else %}<span class="sin-imagen" aria-hidden="true">C<span>·</span></span>{% endif %}<span class="categoria">{{ producto.categoria }}</span></div>
+  <div class="producto-info"><p class="etiqueta">{{ producto.marca }}</p><h3>{{ producto.nombre }}</h3>{% if producto.presentacion %}<p class="muted">{{ producto.presentacion }}</p>{% endif %}<p>{{ producto.descripcion|truncatewords:18 }}</p><div class="producto-precio"><strong>${{ producto.precio|floatformat:2 }}</strong><span>{% if producto.stock %}{{ producto.stock }} disponibles{% else %}Sin stock{% endif %}</span></div>
+  {% if perms.catalogo.change_producto or perms.catalogo.delete_producto %}<div class="acciones-producto">{% if perms.catalogo.change_producto %}<a href="{% url 'catalogo_web:producto_editar' producto.pk %}">Editar</a>{% endif %}{% if perms.catalogo.delete_producto %}<a class="peligro" href="{% url 'catalogo_web:producto_eliminar' producto.pk %}">Eliminar</a>{% endif %}</div>{% endif %}</div>
+</article>

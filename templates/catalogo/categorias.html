@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block titulo %}Categorías · {{ nombre_tienda }}{% endblock %}
+{% block contenido %}
+<section class="seccion"><div class="titulo-seccion"><div><p class="etiqueta">GESTIÓN DEL CATÁLOGO</p><h1 class="titulo-pagina">Categorías</h1></div>{% if perms.catalogo.add_categoria %}<a class="boton" href="{% url 'catalogo_web:categoria_crear' %}">+ Agregar categoría</a>{% endif %}</div>
+<div class="tabla-contenedor"><table><thead><tr><th>Nombre</th><th>Descripción</th><th>Acciones</th></tr></thead><tbody>{% for categoria in categorias %}<tr><td><strong>{{ categoria.nombre }}</strong></td><td>{{ categoria.descripcion|default:'Sin descripción' }}</td><td class="acciones-tabla">{% if perms.catalogo.change_categoria %}<a href="{% url 'catalogo_web:categoria_editar' categoria.pk %}">Editar</a>{% endif %}{% if perms.catalogo.delete_categoria %}<a class="peligro" href="{% url 'catalogo_web:categoria_eliminar' categoria.pk %}">Eliminar</a>{% endif %}</td></tr>{% empty %}<tr><td colspan="3">Todavía no hay categorías. Agregá la primera para organizar tus productos.</td></tr>{% endfor %}</tbody></table></div>
+{% include 'componentes/paginacion.html' %}</section>
+{% endblock %}

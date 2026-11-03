@@ -1,14 +1,10 @@
-from rest_framework.routers import SimpleRouter
+from django.urls import path
 
-from .views import DireccionEnvioViewSet
+from .views import IngresoView, RegistroView, SalidaView
 
-app_name = "usuarios_api"
-
-router = SimpleRouter()
-router.register(
-    "direcciones",
-    DireccionEnvioViewSet,
-    basename="direccion",
-)
-
-urlpatterns = router.urls
+app_name = 'usuarios'
+urlpatterns = [
+    path('registro/', RegistroView.as_view(), name='registro'),
+    path('login/', IngresoView.as_view(), name='login'),
+    path('logout/', SalidaView.as_view(), name='logout'),
+]

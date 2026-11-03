@@ -23,13 +23,12 @@ class ProductoViewSet(viewsets.ModelViewSet):
     ).order_by("id")
     serializer_class = ProductoSerializer
     permission_classes = [IsStaffOrReadOnly]
-
     filter_backends = [
         DjangoFilterBackend,
         filters.SearchFilter,
     ]
     filterset_fields = ["categoria", "marca", "presentacion"]
-    search_fields = ["nombre", "descripcion"]
+    search_fields = ["nombre", "descripcion", "categoria__nombre", "marca__nombre"]
 
 
     def get_serializer_class(self):

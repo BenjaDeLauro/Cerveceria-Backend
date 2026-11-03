@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block titulo %}Ingresar · {{ nombre_tienda }}{% endblock %}
+{% block contenido %}
+<section class="acceso">
+  <div class="acceso-intro"><p class="etiqueta">QUÉ BUENO VERTE DE NUEVO</p><h1>Tu próxima<br>favorita<br><em>te espera.</em></h1><p>Ingresá a tu cuenta y seguí descubriendo el mundo de las bebidas artesanales.</p></div>
+  <div class="panel"><p class="etiqueta">TU CUENTA</p><h2>Iniciar sesión</h2><p class="muted">Usá tu nombre de usuario y contraseña.</p><form method="post">{% csrf_token %}{% include 'componentes/campos.html' %}{% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}<button class="boton completo" type="submit">Ingresar →</button></form><p class="al-pie">¿Todavía no tenés cuenta? <a href="{% url 'usuarios:registro' %}">Registrate</a></p></div>
+</section>
+{% endblock %}
