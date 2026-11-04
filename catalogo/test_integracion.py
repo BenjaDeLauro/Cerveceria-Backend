@@ -51,12 +51,19 @@ class IntegracionFrontendTests(APITestCase):
         self.assertIn(self.client.patch(f'/api/productos/{self.producto.pk}/', {'stock': 10}).status_code, (401, 403))
 
     def test_demo_no_modifica_productos_existentes(self):
-        with TemporaryDirectory() as carpeta, override_settings(BASE_DIR=Path(carpeta)):
+        with TemporaryDirectory() as carpeta, override_settings(MEDIA_ROOT=Path(carpeta)):
             call_command('cargar_catalogo_demo', verbosity=0)
             demo = Producto.objects.get(nombre='ImperioSur IPA')
+            self.assertTrue(demo.imagen.storage.exists(demo.imagen.name))
             demo.stock = 25
+            demo.imagen = ''
             demo.save()
+            golden = Producto.objects.get(nombre='ImperioSur Golden')
+            imagen_golden = golden.imagen.name
             call_command('cargar_catalogo_demo', verbosity=0)
             demo.refresh_from_db()
             self.assertEqual(demo.stock, 25)
+            self.assertTrue(demo.imagen.storage.exists(demo.imagen.name))
+            golden.refresh_from_db()
+            self.assertEqual(golden.imagen.name, imagen_golden)
             self.assertEqual(Producto.objects.filter(nombre__startswith='ImperioSur ').count(), 3)
