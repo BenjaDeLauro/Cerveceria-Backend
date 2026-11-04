@@ -14,6 +14,7 @@ urlpatterns = [
     path('', BienvenidaView.as_view(), name='inicio'),
     path('usuarios/', include('usuarios.urls')),
     path('catalogo/', include('catalogo.urls_web')),
+    path('pedidos/', include('pedidos.urls_web')),
     path('api/auth/', include('usuarios.urls_api')),
     path('api-auth/', include('rest_framework.urls')),
     path('admin/', admin.site.urls),

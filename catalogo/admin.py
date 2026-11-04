@@ -25,6 +25,14 @@ class ProductoAdmin(admin.ModelAdmin):
     list_select_related = ('categoria', 'marca', 'presentacion')
     filter_horizontal = ('proveedores',)
 
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'proveedores':
+            kwargs['help_text'] = (
+                'Si la lista está vacía, creá un proveedor con el botón +. '
+                'Pasá los proveedores elegidos a la lista de seleccionados y guardá el producto.'
+            )
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
+
 
 @admin.register(Presentacion)
 class PresentacionAdmin(admin.ModelAdmin):

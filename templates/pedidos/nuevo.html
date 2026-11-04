@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block contenido %}
+<section class="panel">
+  <h1>Agregar al carrito</h1>
+  <p>{{ producto.nombre }} · ${{ producto.precio|floatformat:2 }} por unidad</p>
+  <p>{{ producto.stock }} unidades disponibles</p>
+  <form method="post">
+    {% csrf_token %}
+    {% include 'componentes/campos.html' %}
+    <button class="boton" type="submit">Agregar al carrito</button>
+  </form>
+  <p><a href="{% url 'catalogo_web:productos' %}">Volver al catálogo</a></p>
+</section>
+{% endblock %}

@@ -13,6 +13,8 @@
     <a class="marca" href="{% url 'inicio' %}"><span class="simbolo" aria-hidden="true">I<span>·</span></span><span>{{ nombre_tienda }}<small>Y BEBIDAS ARTESANALES</small></span></a>
     <nav aria-label="Navegación principal">
       <a href="{% url 'catalogo_web:productos' %}">Catálogo</a>
+      <a href="{% url 'pedidos_web:carrito' %}">Carrito</a>
+      {% if user.is_authenticated %}<a href="{% url 'pedidos_web:lista' %}">Mis pedidos</a>{% endif %}
       {% if perms.catalogo.view_categoria %}<a href="{% url 'catalogo_web:categorias' %}">Categorías</a>{% endif %}
       {% if user.is_staff %}<a href="{% url 'admin:index' %}">Administración</a>{% endif %}
     </nav>
