@@ -38,7 +38,7 @@ jobs:
           docker compose exec -T web python manage.py cargar_catalogo_demo
           docker compose exec -T web python manage.py shell -c "from pathlib import Path; from django.conf import settings; (Path(settings.MEDIA_ROOT) / 'persistencia.txt').write_text('efi')"
           docker compose up -d --force-recreate --wait --wait-timeout 90
-          docker compose exec -T web python manage.py shell -c "from pathlib import Path; from django.conf import settings; from catalogo.models import Producto; assert Producto.objects.filter(nombre__startswith='ImperioSur ').count() == 3; assert (Path(settings.MEDIA_ROOT) / 'persistencia.txt').read_text() == 'efi'"
+          docker compose exec -T web python manage.py shell -c "from pathlib import Path; from django.conf import settings; from catalogo.models import Producto; productos = list(Producto.objects.filter(nombre__startswith='ImperioSur ')); assert len(productos) == 6; assert all(p.imagen and p.imagen.storage.exists(p.imagen.name) for p in productos); assert (Path(settings.MEDIA_ROOT) / 'persistencia.txt').read_text() == 'efi'"
       - name: Mostrar logs y detener los contenedores de prueba
         if: always()
         run: |
