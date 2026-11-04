@@ -9,6 +9,7 @@ from drf_spectacular.utils import extend_schema
 from .models import Pedido, DetallePedido
 from .serializers import (
     PedidoSerializer,
+    PedidoCompraSerializer,
     PedidoListSerializer,
     DetallePedidoSerializer,
     PedidoTotalSerializer
@@ -30,6 +31,8 @@ class PedidoViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return PedidoListSerializer
+        if self.action == "create":
+            return PedidoCompraSerializer
         return PedidoSerializer
 
     def perform_create(self, serializer):

@@ -1,4 +1,7 @@
+from django.db import transaction
 from rest_framework import serializers
+
+from catalogo.models import Producto
 
 from .models import Pedido, DetallePedido
 
@@ -50,6 +53,47 @@ class PedidoListSerializer(PedidoSerializer):
 
     class Meta(PedidoSerializer.Meta):
         fields = PedidoSerializer.Meta.fields + ["detalles"]
+
+
+class RenglonCompraSerializer(serializers.Serializer):
+    producto = serializers.PrimaryKeyRelatedField(queryset=Producto.objects.all())
+    cantidad = serializers.IntegerField(min_value=1, max_value=2147483647)
+
+
+class PedidoCompraSerializer(PedidoSerializer):
+    items = RenglonCompraSerializer(many=True, allow_empty=False, write_only=True)
+
+    class Meta(PedidoSerializer.Meta):
+        fields = PedidoSerializer.Meta.fields + ["items"]
+
+    @transaction.atomic
+    def create(self, validated_data):
+        items = validated_data.pop("items")
+        ids = [item["producto"].pk for item in items]
+        if len(ids) != len(set(ids)):
+            raise serializers.ValidationError({"items": "Ingresá cada producto una sola vez."})
+
+        productos = Producto.objects.in_bulk(ids)
+        detalles = []
+        for item in items:
+            producto = productos.get(item["producto"].pk)
+            if producto is None:
+                raise serializers.ValidationError({"items": "Uno de los productos ya no existe."})
+            if item["cantidad"] > producto.stock:
+                raise serializers.ValidationError({
+                    "items": f"Stock insuficiente para {producto.nombre}. Disponibles: {producto.stock}.",
+                })
+            detalles.append(DetallePedido(
+                producto=producto,
+                cantidad=item["cantidad"],
+                precio_unitario=producto.precio,
+            ))
+
+        pedido = super().create(validated_data)
+        for detalle in detalles:
+            detalle.pedido = pedido
+        DetallePedido.objects.bulk_create(detalles)
+        return pedido
 
 
 class PedidoTotalSerializer(serializers.Serializer):

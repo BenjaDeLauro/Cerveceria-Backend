@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block contenido %}
+<section class="seccion">
+  <h1>Mis pedidos</h1>
+  {% for pedido in pedidos %}
+    <article class="panel">
+      <h2>Pedido #{{ pedido.pk }}</h2>
+      <p>{{ pedido.get_estado_display }} · {{ pedido.fecha }}</p>
+      <ul>
+        {% for detalle in pedido.detalles.all %}
+          <li>{{ detalle.producto.nombre }} × {{ detalle.cantidad }} · ${{ detalle.subtotal|floatformat:2 }}</li>
+        {% empty %}
+          <li>Sin productos cargados.</li>
+        {% endfor %}
+      </ul>
+    </article>
+  {% empty %}
+    <p>Todavía no tenés pedidos.</p>
+  {% endfor %}
+  <p><a href="{% url 'catalogo_web:productos' %}">Volver al catálogo</a></p>
+</section>
+{% endblock %}
