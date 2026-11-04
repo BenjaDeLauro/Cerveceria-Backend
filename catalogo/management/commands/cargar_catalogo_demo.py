@@ -1,4 +1,5 @@
 from decimal import Decimal
+from hashlib import file_digest
 from pathlib import Path
 
 from django.core.files import File
@@ -9,8 +10,27 @@ from django.utils.text import slugify
 from catalogo.models import Categoria, Marca, Presentacion, Producto
 
 
+# Identifica las fotos demo que se publicaron con fondo negro.
+FOTOS_DEMO_ANTERIORES = {
+    'imperiosur-honey.png': '7f8242a15b15145b4a9ccdfc91b822d4ee5493a6564cc307ec824e8a5661a339',
+    'imperiosur-porter.png': '83e42246ed1a293efbbb3126b2a3c64a143840c30b77afbf8b8aa6602b1eef67',
+    'imperiosur-red-ale.png': 'bdd65843632690a1016c5a595d3b93600915a3faa2c5455350befaaa5cbc969e',
+}
+
+
+def es_foto_demo_anterior(imagen, nombre_demo):
+    huella_anterior = FOTOS_DEMO_ANTERIORES.get(nombre_demo)
+    if not huella_anterior:
+        return False
+    try:
+        with imagen.open('rb') as archivo:
+            return file_digest(archivo, 'sha256').hexdigest() == huella_anterior
+    except FileNotFoundError:
+        return False
+
+
 class Command(BaseCommand):
-    help = 'Carga seis productos de demostración y completa sus imágenes faltantes.'
+    help = 'Carga seis productos de demostración y completa o actualiza sus fotos de muestra.'
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -38,10 +58,11 @@ class Command(BaseCommand):
                 },
             )
             creados += int(nuevo)
-            if not producto.imagen:
-                imagen = carpeta_imagenes / f'imperiosur-{slugify(estilo)}.png'
+            imagen = carpeta_imagenes / f'imperiosur-{slugify(estilo)}.png'
+            if not producto.imagen or es_foto_demo_anterior(producto.imagen, imagen.name):
                 with imagen.open('rb') as archivo:
-                    producto.imagen.save(imagen.name, File(archivo), save=True)
+                    producto.imagen.save(imagen.name, File(archivo), save=False)
+                producto.save(update_fields=['imagen'])
                 imagenes_cargadas += 1
         self.stdout.write(self.style.SUCCESS(
             f'{creados} productos demo creados. {imagenes_cargadas} imágenes cargadas.'
