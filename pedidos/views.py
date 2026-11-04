@@ -2,6 +2,7 @@ from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from decimal import Decimal
+from django.db import transaction
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from drf_spectacular.utils import extend_schema
@@ -38,16 +39,21 @@ class PedidoViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(usuario=self.request.user)
 
+    @transaction.atomic
     def perform_update(self, serializer):
-        if serializer.instance.estado != "pendiente":
+        actualizado = self.get_queryset().filter(
+            pk=serializer.instance.pk, estado="pendiente",
+        ).update(estado="pendiente")
+        if not actualizado:
             raise ValidationError(
                 "Solo se pueden modificar pedidos pendientes."
             )
-
+        serializer.instance.refresh_from_db()
         serializer.save()
 
+    @transaction.atomic
     def perform_destroy(self, instance):
-        if instance.estado != "pendiente":
+        if not instance.cancelar():
             raise ValidationError(
                 "Solo se pueden eliminar pedidos pendientes."
             )
@@ -81,12 +87,7 @@ class PedidoViewSet(viewsets.ModelViewSet):
     def cancelar(self, request, pk=None):
         pedido = self.get_object()
 
-        actualizados = self.get_queryset().filter(
-            pk=pedido.pk,
-            estado="pendiente",
-        ).update(estado="cancelado")
-
-        if actualizados == 0:
+        if not pedido.cancelar():
             raise ValidationError(
                 "Solo se pueden cancelar pedidos pendientes."
             )

@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import F
 from rest_framework import serializers
 
 from catalogo.models import Producto
@@ -73,23 +74,23 @@ class PedidoCompraSerializer(PedidoSerializer):
         if len(ids) != len(set(ids)):
             raise serializers.ValidationError({"items": "Ingresá cada producto una sola vez."})
 
-        productos = Producto.objects.in_bulk(ids)
         detalles = []
-        for item in items:
-            producto = productos.get(item["producto"].pk)
-            if producto is None:
-                raise serializers.ValidationError({"items": "Uno de los productos ya no existe."})
-            if item["cantidad"] > producto.stock:
+        for item in sorted(items, key=lambda item: item["producto"].pk):
+            producto = item["producto"]
+            cantidad = item["cantidad"]
+            disponibles = Producto.objects.filter(pk=producto.pk, stock__gte=cantidad)
+            if not disponibles.update(stock=F("stock") - cantidad):
                 raise serializers.ValidationError({
-                    "items": f"Stock insuficiente para {producto.nombre}. Disponibles: {producto.stock}.",
+                    "items": f"Stock insuficiente para {producto.nombre}.",
                 })
+            producto.refresh_from_db(fields=["precio"])
             detalles.append(DetallePedido(
                 producto=producto,
-                cantidad=item["cantidad"],
+                cantidad=cantidad,
                 precio_unitario=producto.precio,
             ))
 
-        pedido = super().create(validated_data)
+        pedido = super().create({**validated_data, "stock_descontado": True})
         for detalle in detalles:
             detalle.pedido = pedido
         DetallePedido.objects.bulk_create(detalles)

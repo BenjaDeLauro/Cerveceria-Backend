@@ -72,6 +72,7 @@ Se necesita Python 3.12 o superior y [uv](https://docs.astral.sh/uv/).
 uv sync --locked
 uv run python manage.py migrate
 uv run python manage.py configurar_grupos
+uv run python manage.py cargar_catalogo_demo
 uv run python manage.py createsuperuser
 uv run python manage.py runserver
 ```

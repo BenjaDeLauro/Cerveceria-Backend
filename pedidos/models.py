@@ -1,6 +1,11 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db import models
+from django.db import models, transaction
+from django.db.models import F
+from django.db.models.signals import pre_delete
+from django.dispatch import receiver
+
+from catalogo.models import Producto
 
 
 class Pedido(models.Model):
@@ -31,6 +36,25 @@ class Pedido(models.Model):
         blank=True,
         null=True,
     )
+
+    stock_descontado = models.BooleanField(default=False, editable=False)
+
+    @transaction.atomic
+    def cancelar(self, *, permitir_confirmado=False):
+        estados = ['pendiente', 'confirmado'] if permitir_confirmado else ['pendiente']
+        actualizados = Pedido.objects.filter(pk=self.pk, estado__in=estados).update(
+            estado='cancelado',
+        )
+        if not actualizados:
+            return False
+
+        if self.stock_descontado:
+            for detalle in self.detalles.order_by('producto_id'):
+                Producto.objects.filter(pk=detalle.producto_id).update(
+                    stock=F('stock') + detalle.cantidad,
+                )
+        self.estado = 'cancelado'
+        return True
 
     def clean(self):
         super().clean()
@@ -75,3 +99,9 @@ class DetallePedido(models.Model):
     @property
     def subtotal(self):
         return self.cantidad * self.precio_unitario
+
+
+@receiver(pre_delete, sender=Pedido)
+def liberar_stock_al_eliminar_pedido(sender, instance, **kwargs):
+    if instance.stock_descontado:
+        instance.cancelar()
