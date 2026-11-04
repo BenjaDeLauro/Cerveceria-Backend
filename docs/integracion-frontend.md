@@ -1,6 +1,6 @@
 # Integración local con ImperioSur
 
-La rama `feature/integracion-frontend` parte de `feature/autenticacion` y reúne la API existente de `feature/api-rest`. Los cambios quedan en una rama de integración para revisión del equipo.
+El backend se ejecuta desde `main`. El código del catálogo de Next.js está en la rama [`feature/integracion-api` de ImperioSur-Frontend](https://github.com/EstebanjsrZ/ImperioSur-Frontend/tree/feature/integracion-api). Usá esa rama para las pruebas hasta que el equipo la integre a su rama principal.
 
 ## Contrato del catálogo
 
@@ -22,18 +22,19 @@ Backend, desde esta carpeta:
 ```powershell
 uv sync --locked
 uv run python manage.py migrate
+uv run python manage.py cargar_catalogo_demo
 uv run python manage.py runserver
 ```
 
 Frontend, desde la carpeta vecina `ImperioSur-Frontend`:
 
 ```powershell
-# Sólo si faltan las dependencias: npm ci
-Copy-Item .env.example .env.local
+npm ci
+if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
 npm run dev
 ```
 
-Abrir http://127.0.0.1:3000/cervezas. En el frontend, `NEXT_PUBLIC_API_URL` debe apuntar a `http://127.0.0.1:8000/api/`.
+En Linux o macOS, copiar `.env.example` a `.env.local` con `cp` la primera vez. Abrir [el catálogo del frontend](http://127.0.0.1:3000/cervezas). En el frontend, `NEXT_PUBLIC_API_URL` debe apuntar a `http://127.0.0.1:8000/api/`.
 
 ## Datos de demostración
 
@@ -41,8 +42,14 @@ Abrir http://127.0.0.1:3000/cervezas. En el frontend, `NEXT_PUBLIC_API_URL` debe
 
 Para comprobar el circuito, editar un producto desde `/admin/catalogo/producto/` y volver a cargar su ficha en el frontend.
 
-## Validación y tareas
+## Pedidos y stock
 
-63 pruebas del backend pasan: modelo/admin, autenticación, vistas HTML y API, más integración de búsqueda con categoría, paginación, CORS, token revocado y carga demo sin sobrescritura. `check` y migraciones pendientes sin errores. El frontend tiene nueve pruebas correctas y compilación de producción verificada.
+El carrito de Django y `POST /api/pedidos/` usan la misma regla. Al crear el pedido se descuentan las unidades disponibles. Si falla un renglón, se deshace toda la operación. El precio unitario se toma del catálogo.
 
-Se respetan las responsabilidades acordadas: Benjamín, estructura e integración general; Esteban, autenticación/templates/modelos; Ignacio, API REST. Esta rama adapta el contrato para la conexión del frontend, sin completar por anticipado los demás ViewSets asignados a API. Aún faltan requisitos generales de la consigna (ocho ViewSets, segundo anidado, actions, documentación OpenAPI y Docker) y flujos del frontend; la conexión de lectura no implica que la EFI esté completa.
+Cancelar un pedido con stock descontado devuelve sus unidades una sola vez. Eliminar un pedido pendiente también libera las unidades. Los pedidos anteriores a este cambio y los cargados manualmente en el admin no descontaron stock, por lo que no generan una devolución. En el admin se pueden gestionar los estados de los pedidos de clientes y consultar sus renglones; esos renglones conservan la reserva original.
+
+## Verificación
+
+- Backend: `uv run python manage.py test`.
+- Frontend: `npm test` y `npm run build`.
+- En el navegador, buscar una cerveza y abrir su ficha para comprobar que se muestran los datos y la imagen servidos por Django. El carrito y el historial se prueban en el sitio Django; la rama de Next.js indicada arriba consume el catálogo.

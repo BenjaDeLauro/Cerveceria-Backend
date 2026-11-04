@@ -44,6 +44,8 @@ class FlujoCompraTests(TestCase):
         self.assertEqual(pedido.detalles.count(), 2)
         detalle = pedido.detalles.get(producto=self.producto)
         self.assertEqual(detalle.subtotal, self.producto.precio * 2)
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 1)
         self.assertContains(self.client.get(reverse('pedidos_web:carrito')), 'Tu carrito está vacío.')
 
     def test_carrito_permite_editar_y_quitar_si_baja_el_stock(self):
@@ -78,6 +80,71 @@ class FlujoCompraTests(TestCase):
         self.assertEqual(respuesta.status_code, 201, respuesta.data)
         pedido = Pedido.objects.get(usuario=self.cliente)
         self.assertEqual(pedido.detalles.get().precio_unitario, self.producto.precio)
+
+    def test_compra_agota_stock_y_cancelacion_lo_devuelve_una_sola_vez(self):
+        api = APIClient()
+        api.force_login(self.cliente)
+        lista = reverse('pedidos_api:pedido-list')
+        datos = {'items': [{'producto': self.producto.pk, 'cantidad': 3}]}
+        compra = api.post(lista, datos, format='json')
+        self.assertEqual(compra.status_code, 201)
+        self.assertEqual(api.post(lista, datos, format='json').status_code, 400)
+
+        cancelar = reverse('pedidos_api:pedido-cancelar', args=[compra.data['id']])
+        self.assertEqual(api.post(cancelar).status_code, 200)
+        self.assertEqual(api.post(cancelar).status_code, 400)
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 3)
+
+    def test_compra_fallida_revierte_descuentos_y_cancelar_un_pedido_anterior_no_repone(self):
+        api = APIClient()
+        api.force_login(self.cliente)
+        agotado = Producto.objects.create(
+            nombre='Agotado', precio=Decimal('100'), stock=0,
+            categoria=self.producto.categoria, marca=self.producto.marca,
+        )
+        lista = reverse('pedidos_api:pedido-list')
+        respuesta = api.post(lista, {'items': [
+            {'producto': self.producto.pk, 'cantidad': 1},
+            {'producto': agotado.pk, 'cantidad': 1},
+        ]}, format='json')
+        self.assertEqual(respuesta.status_code, 400)
+        self.assertFalse(Pedido.objects.exists())
+
+        anterior = Pedido.objects.create(usuario=self.cliente)
+        anterior.detalles.create(producto=self.producto, cantidad=2, precio_unitario=Decimal('100'))
+        cancelar = reverse('pedidos_api:pedido-cancelar', args=[anterior.pk])
+        self.assertEqual(api.post(cancelar).status_code, 200)
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 3)
+
+    def test_admin_cancela_o_elimina_pedidos_y_repone_sus_reservas(self):
+        api = APIClient()
+        api.force_login(self.cliente)
+        admin = get_user_model().objects.create_superuser(username='admin-stock')
+        self.client.force_login(admin)
+
+        for operacion in ('cancelar', 'eliminar'):
+            with self.subTest(operacion=operacion):
+                compra = api.post(reverse('pedidos_api:pedido-list'), {'items': [
+                    {'producto': self.producto.pk, 'cantidad': 2},
+                ]}, format='json')
+                self.assertEqual(compra.status_code, 201)
+                pedido_id = compra.data['id']
+                if operacion == 'cancelar':
+                    respuesta = self.client.post(reverse('admin:pedidos_pedido_change', args=[pedido_id]), {
+                        'usuario': self.cliente.pk, 'estado': 'cancelado',
+                        'detalles-TOTAL_FORMS': 0, 'detalles-INITIAL_FORMS': 0,
+                    })
+                    self.assertEqual(Pedido.objects.get(pk=pedido_id).estado, 'cancelado')
+                else:
+                    respuesta = self.client.post(reverse('admin:pedidos_pedido_delete', args=[pedido_id]), {
+                        'post': 'yes',
+                    })
+                    self.assertFalse(Pedido.objects.filter(pk=pedido_id).exists())
+                self.assertEqual(respuesta.status_code, 302)
+                self.producto.refresh_from_db()
+                self.assertEqual(self.producto.stock, 3)
 
     def test_admin_crea_proveedor_y_lo_asigna_al_producto(self):
         admin = get_user_model().objects.create_superuser(username='admin')
