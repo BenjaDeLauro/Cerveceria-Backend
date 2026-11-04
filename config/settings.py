@@ -143,7 +143,7 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 LOGIN_URL = 'usuarios:login'
 LOGIN_REDIRECT_URL = 'inicio'
 LOGOUT_REDIRECT_URL = 'inicio'
-NOMBRE_TIENDA = 'Cervecería y Bebidas Artesanales'
+NOMBRE_TIENDA = 'ImperioSur'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'catalogo.pagination.CatalogoPagination',

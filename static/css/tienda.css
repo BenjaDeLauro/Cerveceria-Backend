@@ -779,3 +779,31 @@ th {
     letter-spacing:.09em
   }
 }
+
+.accesos-backend {
+  padding:clamp(24px,4vw,44px);
+  border-radius:18px;
+  background:var(--tinta);
+  color:var(--papel);
+}
+.accesos-backend .etiqueta {
+  color:var(--ambar);
+}
+.grilla-accesos {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));
+  gap:12px;
+}
+.grilla-accesos a {
+  display:grid;
+  gap:5px;
+  padding:16px;
+  border:1px solid var(--ambar);
+  border-radius:10px;
+  text-decoration:none;
+}
+.grilla-accesos a:hover,
+.grilla-accesos a:focus-visible {
+  background:var(--ambar);
+  color:var(--tinta);
+}

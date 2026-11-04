@@ -10,6 +10,28 @@
   </div>
   <div class="hero-arte" aria-hidden="true"><div class="sello">EL SABOR<br>DE LO AUTÉNTICO</div><div class="botella botella-uno"><div class="cuello"></div><div class="etiqueta-botella"><span>SELECCIÓN</span><strong>IPA</strong><span>ARTESANAL</span><div class="lineas"></div></div></div><div class="botella botella-dos"><div class="cuello"></div><div class="etiqueta-botella"><span>SELECCIÓN</span><strong>PORTER</strong><span>ARTESANAL</span><div class="lineas"></div></div></div><div class="nota-arte">BUENA COMPAÑÍA.<br>MEJORES MOMENTOS.</div></div>
 </section>
+<section class="seccion accesos-backend" aria-labelledby="titulo-accesos">
+  <p class="etiqueta">IMPERIOSUR · BACKEND</p>
+  <h2 id="titulo-accesos">Explorá el sistema</h2>
+  <div class="grilla-accesos">
+    <a href="{% url 'admin:index' %}">
+      <strong>Administración</strong>
+      <span>Gestioná el catálogo, los usuarios y los pedidos.</span>
+    </a>
+    <a href="{% url 'catalogo_api:producto-list' %}">
+      <strong>API navegable</strong>
+      <span>Consultá los productos y probá la paginación y los filtros.</span>
+    </a>
+    <a href="{% url 'swagger-ui' %}">
+      <strong>Swagger</strong>
+      <span>Explorá las operaciones y sus parámetros.</span>
+    </a>
+    <a href="{% url 'schema' %}">
+      <strong>Esquema OpenAPI</strong>
+      <span>Descargá el contrato de la API.</span>
+    </a>
+  </div>
+</section>
 <section class="seccion">
   <div class="titulo-seccion"><div><p class="etiqueta">NUESTRO CATÁLOGO</p><h2>Para empezar a descubrir</h2></div><a class="enlace" href="{% url 'catalogo_web:productos' %}">Ver todos los productos →</a></div>
   <div class="grilla-productos">{% for producto in productos_recientes %}{% include 'catalogo/tarjeta_producto.html' %}{% empty %}<div class="vacio ancho"><h3>El catálogo está por empezar.</h3><p>Pronto vas a encontrar acá nuestras bebidas artesanales.</p>{% if puede_gestionar_catalogo %}<a class="boton secundario" href="{% url 'catalogo_web:producto_crear' %}">Cargar el primer producto</a>{% endif %}</div>{% endfor %}</div>

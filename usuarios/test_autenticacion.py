@@ -28,7 +28,7 @@ class AutenticacionWebTests(TestCase):
             with self.subTest(nombre=nombre):
                 respuesta = self.client.get(reverse(nombre))
                 self.assertEqual(respuesta.status_code, 200)
-                self.assertEqual(respuesta.context['nombre_tienda'], 'Cervecería y Bebidas Artesanales')
+                self.assertEqual(respuesta.context['nombre_tienda'], 'ImperioSur')
         self.assertContains(self.client.get(reverse('usuarios:login')), 'csrfmiddlewaretoken')
 
     def test_registro_crea_cliente_sin_elevar_privilegios_y_abre_sesion(self):
