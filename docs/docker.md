@@ -34,9 +34,8 @@ Para agregar los tres productos de demostración, sin sobrescribir los existente
 docker compose exec web python manage.py cargar_catalogo_demo
 ```
 
-Dentro de esta imagen no se incluye el repositorio del frontend. El comando demo
-crea los productos con precio/stock de prueba y las tarjetas muestran la imagen
-por defecto hasta que un administrador cargue las fotografías.
+El contenedor trae las imágenes de IPA, Golden y Stout. El comando las copia al
+volumen de imágenes cuando un producto de muestra todavía no tiene foto.
 
 ## Configuración
 

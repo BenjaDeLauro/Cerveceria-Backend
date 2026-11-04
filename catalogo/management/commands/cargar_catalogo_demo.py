@@ -1,6 +1,6 @@
 from decimal import Decimal
+from pathlib import Path
 
-from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -9,7 +9,7 @@ from catalogo.models import Categoria, Marca, Presentacion, Producto
 
 
 class Command(BaseCommand):
-    help = 'Agrega tres productos de demostración sin sobrescribir datos existentes.'
+    help = 'Carga tres productos de demostración y completa sus imágenes faltantes.'
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -21,6 +21,8 @@ class Command(BaseCommand):
             ('Stout', 'Oscuras', '3400.00', 8, 'Oscura, con notas de maltas tostadas.'),
         ]
         creados = 0
+        imagenes_cargadas = 0
+        carpeta_imagenes = Path(__file__).resolve().parents[2] / 'demo_images'
         for estilo, categoria_nombre, precio, stock, descripcion in estilos:
             categoria, _ = Categoria.objects.get_or_create(nombre=categoria_nombre)
             producto, nuevo = Producto.objects.get_or_create(
@@ -31,10 +33,12 @@ class Command(BaseCommand):
                     'precio': Decimal(precio), 'stock': stock,
                 },
             )
-            if nuevo:
-                imagen = settings.BASE_DIR.parent / 'ImperioSur-Frontend' / 'public' / 'images' / f'imperiosur-{estilo.lower()}.png'
-                if imagen.is_file():
-                    with imagen.open('rb') as archivo:
-                        producto.imagen.save(imagen.name, File(archivo), save=True)
-                creados += 1
-        self.stdout.write(self.style.SUCCESS(f'{creados} productos demo creados. Los existentes se conservaron.'))
+            creados += int(nuevo)
+            if not producto.imagen:
+                imagen = carpeta_imagenes / f'imperiosur-{estilo.lower()}.png'
+                with imagen.open('rb') as archivo:
+                    producto.imagen.save(imagen.name, File(archivo), save=True)
+                imagenes_cargadas += 1
+        self.stdout.write(self.style.SUCCESS(
+            f'{creados} productos demo creados. {imagenes_cargadas} imágenes cargadas.'
+        ))

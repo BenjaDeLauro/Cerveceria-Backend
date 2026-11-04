@@ -37,7 +37,7 @@ Abrir http://127.0.0.1:3000/cervezas. En el frontend, `NEXT_PUBLIC_API_URL` debe
 
 ## Datos de demostración
 
-`uv run python manage.py cargar_catalogo_demo` agrega tres productos ImperioSur con precio y stock de prueba. Es idempotente y no sobrescribe registros existentes. Copia las imágenes si existe la carpeta vecina del frontend. No crea ni modifica usuarios. La base y los archivos de media permanecen excluidos de Git.
+`uv run python manage.py cargar_catalogo_demo` carga IPA, Golden y Stout con sus imágenes de muestra. Las imágenes originales están en `catalogo/demo_images/`. Si los productos ya existen, el comando completa las imágenes que falten y conserva sus precios, stock y fotos ya cargadas.
 
 Para comprobar el circuito, editar un producto desde `/admin/catalogo/producto/` y volver a cargar su ficha en el frontend.
 
