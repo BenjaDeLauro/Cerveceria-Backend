@@ -4,12 +4,13 @@ from pathlib import Path
 from django.core.files import File
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.utils.text import slugify
 
 from catalogo.models import Categoria, Marca, Presentacion, Producto
 
 
 class Command(BaseCommand):
-    help = 'Carga tres productos de demostración y completa sus imágenes faltantes.'
+    help = 'Carga seis productos de demostración y completa sus imágenes faltantes.'
 
     @transaction.atomic
     def handle(self, *args, **options):
@@ -19,6 +20,9 @@ class Command(BaseCommand):
             ('IPA', 'Lupuladas', '3200.00', 12, 'Aromática y de amargor marcado.'),
             ('Golden', 'Rubias', '2800.00', 18, 'Dorada, suave y refrescante.'),
             ('Stout', 'Oscuras', '3400.00', 8, 'Oscura, con notas de maltas tostadas.'),
+            ('Red Ale', 'Rojas', '3100.00', 14, 'Cobriza, con notas de caramelo y malta tostada.'),
+            ('Honey', 'Rubias', '3000.00', 16, 'Dorada, con aroma a miel y final suave.'),
+            ('Porter', 'Oscuras', '3500.00', 10, 'Oscura, con notas de chocolate y un tostado suave.'),
         ]
         creados = 0
         imagenes_cargadas = 0
@@ -35,7 +39,7 @@ class Command(BaseCommand):
             )
             creados += int(nuevo)
             if not producto.imagen:
-                imagen = carpeta_imagenes / f'imperiosur-{estilo.lower()}.png'
+                imagen = carpeta_imagenes / f'imperiosur-{slugify(estilo)}.png'
                 with imagen.open('rb') as archivo:
                     producto.imagen.save(imagen.name, File(archivo), save=True)
                 imagenes_cargadas += 1

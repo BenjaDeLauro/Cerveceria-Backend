@@ -38,7 +38,7 @@ En Linux o macOS, copiar `.env.example` a `.env.local` con `cp` la primera vez. 
 
 ## Datos de demostración
 
-`uv run python manage.py cargar_catalogo_demo` carga IPA, Golden y Stout con sus imágenes de muestra. Las imágenes originales están en `catalogo/demo_images/`. Si los productos ya existen, el comando completa las imágenes que falten y conserva sus precios, stock y fotos ya cargadas.
+`uv run python manage.py cargar_catalogo_demo` carga IPA, Golden, Stout, Red Ale, Honey y Porter con sus imágenes de muestra. Las imágenes originales están en `catalogo/demo_images/`. Si los productos ya existen, el comando completa las imágenes que falten y conserva sus precios, stock y fotos ya cargadas.
 
 Para comprobar el circuito, editar un producto desde `/admin/catalogo/producto/` y volver a cargar su ficha en el frontend.
 

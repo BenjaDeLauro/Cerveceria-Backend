@@ -28,7 +28,7 @@ idempotente de grupos. No se crean administradores ni contraseñas automáticame
 - Administración: <http://127.0.0.1:8000/admin/>.
 - API de productos: <http://127.0.0.1:8000/api/productos/>.
 
-Para agregar los tres productos de demostración, sin sobrescribir los existentes:
+Para agregar los seis productos de demostración, sin sobrescribir los existentes:
 
 ```shell
 docker compose exec web python manage.py cargar_catalogo_demo

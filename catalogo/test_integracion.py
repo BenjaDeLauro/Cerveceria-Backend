@@ -66,4 +66,11 @@ class IntegracionFrontendTests(APITestCase):
             self.assertTrue(demo.imagen.storage.exists(demo.imagen.name))
             golden.refresh_from_db()
             self.assertEqual(golden.imagen.name, imagen_golden)
-            self.assertEqual(Producto.objects.filter(nombre__startswith='ImperioSur ').count(), 3)
+            productos = Producto.objects.filter(nombre__startswith='ImperioSur ')
+            self.assertEqual(set(productos.values_list('nombre', flat=True)), {
+                'ImperioSur IPA', 'ImperioSur Golden', 'ImperioSur Stout',
+                'ImperioSur Red Ale', 'ImperioSur Honey', 'ImperioSur Porter',
+            })
+            for producto in productos:
+                with self.subTest(producto=producto.nombre):
+                    self.assertTrue(producto.imagen.storage.exists(producto.imagen.name))
